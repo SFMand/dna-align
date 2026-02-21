@@ -1,6 +1,5 @@
 from itertools import combinations
 # scoring parameters (cost)
-gamma = 0 # match
 alpha = 1 # gap `-`
 beta = 2	# mismatch
 
@@ -13,6 +12,7 @@ def brute_force(dna1, dna2):
 	for align_length in range(max(len1, len2), len1 + len2 + 1):
 		for pos1 in combinations(range(align_length), len1):
 			for pos2 in combinations(range(align_length), len2):
+				score = 0
 				a1_chars, a2_chars = [], []
 				ptr1, ptr2 = 0, 0
 				for idx in range(align_length):
@@ -26,7 +26,15 @@ def brute_force(dna1, dna2):
 						ptr2 += 1
 					else:
 						char2 = '-'
+					if char1 == '-' or char2 == '-':
+						score += alpha
+					elif char1 != char2:
+						score += beta
 					a1_chars.append(char1)
 					a2_chars.append(char2)
-				print(f"String 1 based on pos1: {"".join(a1_chars)}\tString 2 based on pos2: {"".join(a2_chars)}")
+				if score < best_score:
+					best_score = score
+					best_a1 = "".join(a1_chars)
+					best_a2 = "".join(a2_chars)
+					print(f"new best: a1 -> {best_a1}\ta2 -> {best_a2} score {best_score}")
 	return best_score, best_a1, best_a2
