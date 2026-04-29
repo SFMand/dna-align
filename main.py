@@ -7,13 +7,13 @@ from collections.abc import Callable
 test_cases = [
         ("Shortest Random DNAs", dna.shortestDna),
         ("Short Random DNAs", dna.shortDna),
-        # ("Long Random DNAs", dna.longDna),
-        # ("Longer Random DNAs", dna.longerDna),
-        # ("Longest Random DNAs", dna.longestDna)
+        ("Long Random DNAs", dna.longDna),
+        ("Longer Random DNAs", dna.longerDna),
+        ("Longest Random DNAs", dna.longestDna)
     ]
 
 solution_methods = [
-    ("Brute force", algorithm.brute_force),
+    # ("Brute force", algorithm.brute_force),
     ("Greedy first", algorithm.greedy_first),
     ("Dynamic programming", algorithm.dynamic_programming),
 ]

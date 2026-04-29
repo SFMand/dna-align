@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import LiteralString
 
-GAP_PENALTY = 1
-MISMATCH_PENALTY = 2
+MATCH = 0 # gamma
+GAP_PENALTY = 1 # alpha
+MISMATCH_PENALTY = 2 # beta
 
 @dataclass
 class Result:

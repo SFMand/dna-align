@@ -1,6 +1,6 @@
 from itertools import combinations
 from logic.config import Result
-from logic.config import GAP_PENALTY, MISMATCH_PENALTY
+from logic.config import GAP_PENALTY, MISMATCH_PENALTY, MATCH
 
 def brute_force(dna1, dna2):
 	len1 = len(dna1)
@@ -44,4 +44,21 @@ def greedy_first(dna1, dna2):
 
 
 def dynamic_programming(dna1, dna2):
-	raise NotImplementedError("dynamic_programming is not implemented")
+	dp = [[0] * (len(dna2) + 1) for _ in range(len(dna1) + 1)] # matrix, size: rows=(len(dna1) + 1) x columns=(len(dna2) + 1)
+ 
+	for i in range(len(dna1) + 1):
+		dp[i][0] = i * GAP_PENALTY
+  
+	for j in range(len(dna2) + 1):
+		dp[0][j] = j * GAP_PENALTY
+  
+	for i in range(1, len(dna1) + 1):	
+		for j in range(1, len(dna2) + 1):
+			if dna1[i - 1] == dna2[j - 1]:
+				dp[i][j] = dp[i - 1][j - 1] + MATCH
+			else:
+				dp[i][j] = min(dp[i - 1][j] + GAP_PENALTY, dp[i][j - 1] + GAP_PENALTY, dp[i - 1][j - 1] + MISMATCH_PENALTY)
+    
+	aligned_dna1, aligned_dna2 = [], []
+	
+	return Result(dp[len(dna1)][len(dna2)], "".join(reversed(aligned_dna1)), "".join(reversed(aligned_dna2)), None)
