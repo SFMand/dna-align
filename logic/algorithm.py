@@ -60,5 +60,35 @@ def dynamic_programming(dna1, dna2):
 				dp[i][j] = min(dp[i - 1][j] + GAP_PENALTY, dp[i][j - 1] + GAP_PENALTY, dp[i - 1][j - 1] + MISMATCH_PENALTY)
     
 	aligned_dna1, aligned_dna2 = [], []
-	
+	i = len(dna1)
+	j = len(dna2)
+
+	while i > 0 or j > 0:
+
+    # Diagonal: letter from dna1 and letter from dna2
+		if i > 0 and j > 0:
+			if dna1[i - 1] == dna2[j - 1]:
+				cost = MATCH
+			else:
+				cost = MISMATCH_PENALTY
+
+			if dp[i][j] == dp[i - 1][j - 1] + cost:
+				aligned_dna1.append(dna1[i - 1])
+				aligned_dna2.append(dna2[j - 1])
+				i -= 1
+				j -= 1
+				continue
+
+		# Up: letter from dna1 and gap in dna2
+		if i > 0 and dp[i][j] == dp[i - 1][j] + GAP_PENALTY:
+			aligned_dna1.append(dna1[i - 1])
+			aligned_dna2.append("-")
+			i -= 1
+
+		# Left: letter from dna2 and gap in dna1
+		else:
+			aligned_dna1.append("-")
+			aligned_dna2.append(dna2[j - 1])
+			j -= 1	
+
 	return Result(dp[len(dna1)][len(dna2)], "".join(reversed(aligned_dna1)), "".join(reversed(aligned_dna2)), None)
