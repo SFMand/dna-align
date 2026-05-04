@@ -35,13 +35,67 @@ def brute_force(dna1, dna2):
 					best_score = score
 					best_a1 = "".join(a1_chars)
 					best_a2 = "".join(a2_chars)
-					print(f"new best: a1 -> {best_a1}\ta2 -> {best_a2} score {best_score}")
 	return Result(int(best_score), best_a1, best_a2, None)
 
 
 def greedy_first(dna1, dna2):
-	raise NotImplementedError("greedy_first is not implemented")
+    ptr1, ptr2 = 0, 0
+    aligned_dna1, aligned_dna2 = [], []
+    score = 0
 
+    while ptr1 < len(dna1) and ptr2 < len(dna2):
+        
+        # Option 1: align current characters (match or mismatch)
+        if dna1[ptr1] == dna2[ptr2]:
+            diagonal_cost = MATCH          # cost = 0
+        else:
+            diagonal_cost = MISMATCH_PENALTY  # cost = 2
+
+        # Option 2: insert gap in dna2 (advance dna1 only)
+        gap_in_dna2_cost = GAP_PENALTY     # cost = 1
+
+        # Option 3: insert gap in dna1 (advance dna2 only)
+        gap_in_dna1_cost = GAP_PENALTY     # cost = 1
+
+        # Greedy choice: pick the locally optimal (minimum cost) option
+        min_cost = min(diagonal_cost, gap_in_dna2_cost, gap_in_dna1_cost)
+
+        if min_cost == diagonal_cost:
+            # Irrevocable: commit to aligning both characters
+            aligned_dna1.append(dna1[ptr1])
+            aligned_dna2.append(dna2[ptr2])
+            score += diagonal_cost
+            ptr1 += 1
+            ptr2 += 1
+
+        elif min_cost == gap_in_dna2_cost:
+            # Irrevocable: commit to gap in dna2
+            aligned_dna1.append(dna1[ptr1])
+            aligned_dna2.append('-')
+            score += GAP_PENALTY
+            ptr1 += 1
+
+        else:
+            # Irrevocable: commit to gap in dna1
+            aligned_dna1.append('-')
+            aligned_dna2.append(dna2[ptr2])
+            score += GAP_PENALTY
+            ptr2 += 1
+
+    # Flush remaining characters — only one sequence can have leftovers
+    while ptr1 < len(dna1):
+        aligned_dna1.append(dna1[ptr1])
+        aligned_dna2.append('-')
+        score += GAP_PENALTY
+        ptr1 += 1
+
+    while ptr2 < len(dna2):
+        aligned_dna1.append('-')
+        aligned_dna2.append(dna2[ptr2])
+        score += GAP_PENALTY
+        ptr2 += 1
+
+    return Result(score, "".join(aligned_dna1), "".join(aligned_dna2), None)
 
 def dynamic_programming(dna1, dna2):
 	dp = [[0] * (len(dna2) + 1) for _ in range(len(dna1) + 1)] # matrix, size: rows=(len(dna1) + 1) x columns=(len(dna2) + 1)
