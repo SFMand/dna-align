@@ -1,5 +1,4 @@
 import time
-from typing import LiteralString
 import data.dna_str as dna
 import logic.algorithm as algorithm
 import logic.config as conf
@@ -18,6 +17,8 @@ solution_methods = [
     ("Dynamic programming", algorithm.dynamic_programming),
 ]
 
+VALID_DNA_CHARS = {"A", "C", "G", "T"}
+
 def analysis(method: Callable[[str, str], conf.Result], test_cases: tuple[str, str]):
     dna1 = test_cases[0]
     dna2 = test_cases[1]
@@ -30,18 +31,34 @@ def analysis(method: Callable[[str, str], conf.Result], test_cases: tuple[str, s
     return analysis_result
 
 
+def is_valid_dna_string(value: str) -> bool:
+    return all(char in VALID_DNA_CHARS for char in value)
 
-for case_name, dna_rand in test_cases:
-    print(f"\n--- {case_name} ---")
-    dna_rand_result = (dna_rand(), dna_rand())
+
+def get_custom_dna_pair() -> tuple[str, str]:
+    while True:
+        dna1 = input("Enter first DNA string (A/C/G/T only): ").strip().upper()
+        dna2 = input("Enter second DNA string (A/C/G/T only): ").strip().upper()
+        if is_valid_dna_string(dna1) and is_valid_dna_string(dna2):
+            return dna1, dna2
+        print("Invalid input. Use only A, C, G, T and make sure both strings are non-empty.\n")
+
+
+def run_once() -> None:
+    for case_name, dna_rand in test_cases:
+        print(f"\n--- {case_name} ---")
+        dna_rand_result = (dna_rand(), dna_rand())
+        solve(dna_rand_result)
+
+def run_custom_once() -> None:
+    dna_pair = get_custom_dna_pair()
+    print("\n--- Custom DNA Strings ---")
+    solve(dna_pair)
+
+def solve(dna_pair):
     for method_name, method in solution_methods:
         print(f"\n{method_name}:")
-        try:
-            solution = analysis(method, dna_rand_result)
-        except NotImplementedError:
-            print("Not implemented yet")
-            continue
-
+        solution = analysis(method, dna_pair)
         print(f"""
               ================================
               Best alignment score: {solution.best_score}
@@ -51,3 +68,27 @@ for case_name, dna_rand in test_cases:
               Time taken: {solution.time_taken: 3f} milliseconds
               ================================
               """)
+
+def main():
+    while True:
+        print("\nChoose input mode:")
+        print("1. Random test cases")
+        print("2. Custom DNA strings")
+        mode = input("Select option (1/2): ").strip()
+
+        if mode == "1":
+            run_once()
+        elif mode == "2":
+            run_custom_once()
+        else:
+            print("Invalid option. Please select 1 or 2.")
+            continue
+
+        should_continue = input("Run again? (y/n): ").strip().lower()
+        if should_continue not in {"y", "yes"}:
+            print("Exiting app.")
+            break
+
+
+if __name__ == "__main__":
+    main()

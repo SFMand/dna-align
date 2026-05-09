@@ -35,7 +35,7 @@ def brute_force(dna1, dna2):
 					best_score = score
 					best_a1 = "".join(a1_chars)
 					best_a2 = "".join(a2_chars)
-	return Result(int(best_score), best_a1, best_a2, None)
+	return Result(best_score, best_a1, best_a2, None)
 
 
 def greedy_first(dna1, dna2):
@@ -98,11 +98,12 @@ def greedy_first(dna1, dna2):
     return Result(score, "".join(aligned_dna1), "".join(aligned_dna2), None)
 
 def dynamic_programming(dna1, dna2):
-	dp = [[0] * (len(dna2) + 1) for _ in range(len(dna1) + 1)] # matrix, size: rows=(len(dna1) + 1) x columns=(len(dna2) + 1)
+  # Base
+	dp = [[0.0] * (len(dna2) + 1) for _ in range(len(dna1) + 1)] # matrix, size: rows=(len(dna1) + 1) x columns=(len(dna2) + 1)
  
 	for i in range(len(dna1) + 1):
 		dp[i][0] = i * GAP_PENALTY
-  
+	
 	for j in range(len(dna2) + 1):
 		dp[0][j] = j * GAP_PENALTY
   
