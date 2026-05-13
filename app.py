@@ -1,7 +1,6 @@
 import time
 from collections.abc import Callable
 
-from sqlalchemy import case
 import streamlit as st
 
 import data.dna_str as dna
