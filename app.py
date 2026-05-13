@@ -8,6 +8,7 @@ import logic.algorithm as algorithm
 import logic.config as conf
 
 VALID_DNA_CHARS = {"A", "C", "G", "T"}
+BRUTE_FORCE_MAX_LEN = 6
 
 TEST_CASES: list[tuple[str, Callable[[], str]]] = [
     ("Shortest Random DNAs", dna.shortestDna),
@@ -100,6 +101,9 @@ def main() -> None:
     results: list[tuple[str, conf.Result]] = []
     for method_name, method in SOLUTION_METHODS:
         if method_name not in selected_methods:
+            continue
+        if method_name == "Brute force" and max(len(dna_pair[0]), len(dna_pair[1])) > BRUTE_FORCE_MAX_LEN:
+            st.warning(f"Brute force skipped: input exceeds {BRUTE_FORCE_MAX_LEN} characters and would hang the app.")
             continue
         result = analyze(method, dna_pair)
         results.append((method_name, result))
