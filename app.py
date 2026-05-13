@@ -56,7 +56,7 @@ def render_result(method_name: str, result: conf.Result) -> None:
 
 def main() -> None:
     st.set_page_config(page_title="DNAlignUI", layout="wide")
-    st.title("DNA Alignment, for goat alawt")
+    st.title("DNA Alignment")
 
     with st.sidebar:
         st.header("Input Settings")
@@ -72,7 +72,7 @@ def main() -> None:
                     st.subheader("Custom DNA Strings")
                     custom_dna1 = st.text_input("First DNA string (A/C/G/T only)", placeholder="A/C/G/T only")
                     custom_dna2 = st.text_input("Second DNA string (A/C/G/T only)", placeholder="A/C/G/T only")
-                
+
                 dna_pair = (custom_dna1.strip().upper(), custom_dna2.strip().upper())
                 if not is_valid_dna_string(dna_pair[0]) or not is_valid_dna_string(dna_pair[1]):
                     st.error("Enter valid DNA strings")
@@ -97,11 +97,32 @@ def main() -> None:
     st.subheader("Inputs")
     st.code(f"{dna_pair[0]}\n{dna_pair[1]}", language="text")
 
+    results: list[tuple[str, conf.Result]] = []
     for method_name, method in SOLUTION_METHODS:
         if method_name not in selected_methods:
             continue
         result = analyze(method, dna_pair)
+        results.append((method_name, result))
         render_result(method_name, result)
+
+    if len(results) > 1:
+        st.divider()
+        st.subheader("Comparison")
+
+        score_data = []
+        time_data = []
+        for name, r in results:
+            score_data.append({"Metric": "Best Score", "Algorithm": name, "Value": r.best_score})
+            time_data.append({"Algorithm": name, "Time (ms)": round(r.time_taken or 0, 3)})
+
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            st.caption("Alignment Score")
+            st.bar_chart(score_data, x="Metric", y="Value", color="Algorithm", stack=False)
+        with col2:
+            st.caption("Execution Time")
+            st.bar_chart(time_data, x="Algorithm", y="Time (ms)")
+
         
 if __name__ == "__main__":    
     main()
