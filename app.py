@@ -58,6 +58,7 @@ def render_result(method_name: str, result: conf.Result) -> None:
 def main() -> None:
     st.set_page_config(page_title="DNAlignUI", layout="wide")
     st.title("DNA Alignment")
+    
 
     with st.sidebar:
         st.header("Input Settings")

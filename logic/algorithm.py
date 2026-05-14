@@ -42,54 +42,40 @@ def greedy_first(dna1, dna2):
     ptr1, ptr2 = 0, 0
     aligned_dna1, aligned_dna2 = [], []
     score = 0
+    len1, len2 = len(dna1), len(dna2)
 
-    while ptr1 < len(dna1) and ptr2 < len(dna2):
-        
-        # Option 1: align current characters (match or mismatch)
+    while ptr1 < len1 and ptr2 < len2:
         if dna1[ptr1] == dna2[ptr2]:
-            diagonal_cost = MATCH          # cost = 0
-        else:
-            diagonal_cost = MISMATCH_PENALTY  # cost = 2
-
-        # Option 2: insert gap in dna2 (advance dna1 only)
-        gap_in_dna2_cost = GAP_PENALTY     # cost = 1
-
-        # Option 3: insert gap in dna1 (advance dna2 only)
-        gap_in_dna1_cost = GAP_PENALTY     # cost = 1
-
-        # Greedy choice: pick the locally optimal (minimum cost) option
-        min_cost = min(diagonal_cost, gap_in_dna2_cost, gap_in_dna1_cost)
-
-        if min_cost == diagonal_cost:
-            # Irrevocable: commit to aligning both characters
+            # Match: always the greedy choice
             aligned_dna1.append(dna1[ptr1])
             aligned_dna2.append(dna2[ptr2])
-            score += diagonal_cost
+            score += MATCH
             ptr1 += 1
             ptr2 += 1
-
-        elif min_cost == gap_in_dna2_cost:
-            # Irrevocable: commit to gap in dna2
+        elif MISMATCH_PENALTY <= GAP_PENALTY:
             aligned_dna1.append(dna1[ptr1])
-            aligned_dna2.append('-')
-            score += GAP_PENALTY
-            ptr1 += 1
-
-        else:
-            # Irrevocable: commit to gap in dna1
-            aligned_dna1.append('-')
             aligned_dna2.append(dna2[ptr2])
-            score += GAP_PENALTY
+            score += MISMATCH_PENALTY
+            ptr1 += 1
             ptr2 += 1
+        else:
+            if (len1 - ptr1) >= (len2 - ptr2):
+                aligned_dna1.append(dna1[ptr1])
+                aligned_dna2.append('-')
+                ptr1 += 1
+            else:
+                aligned_dna1.append('-')
+                aligned_dna2.append(dna2[ptr2])
+                ptr2 += 1
+            score += GAP_PENALTY
 
-    # Flush remaining characters — only one sequence can have leftovers
-    while ptr1 < len(dna1):
+    while ptr1 < len1:
         aligned_dna1.append(dna1[ptr1])
         aligned_dna2.append('-')
         score += GAP_PENALTY
         ptr1 += 1
 
-    while ptr2 < len(dna2):
+    while ptr2 < len2:
         aligned_dna1.append('-')
         aligned_dna2.append(dna2[ptr2])
         score += GAP_PENALTY
